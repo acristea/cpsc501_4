@@ -231,12 +231,12 @@ void outputToFile(double output_signal[], CWav* original , int numberOfSamples, 
 						original->mySampleRate, outputFileStream);
 	
 	int i;
-	float maxValInResult = -1;
+	float maxValInResult = -1.0;
 	for (i = 0; i < numberOfSamples; i++ )
 		if ( output_signal[i] > maxValInResult )
 			maxValInResult = output_signal[i];
 
-	float maxValInInput = -1;
+	float maxValInInput = -1.0;
 	for (i = 0; i < numberOfSamples; i++ )
 		if (original->my_signal[i] > maxValInInput )
 			maxValInInput = original->my_signal[i];
@@ -293,12 +293,12 @@ int main(int argc, char* argv[])
 	cout << sizeH << endl;
 	cout << sizeX << endl;
 	              
-	int maxSize;
-	if(sizeH >= sizeX) {
-		maxSize = sizeH;
+	int maxSize = 0;
+	if(sizeX >= sizeH) {
+		maxSize = sizeX;
 	}
 	else {
-		maxSize = sizeX;
+		maxSize = sizeH;
 	}
 	cout << "maxSize: " << maxSize << endl;
 
@@ -312,21 +312,16 @@ int main(int argc, char* argv[])
 
 	int i = 0;
 
+	int	doublePow2 = 2 * pow2;
 	//set hComplex with 0's
-	double hComplex[2 * pow2];
-	for(i = 0; i < 2 * pow2; i++) {
+	double hComplex[doublePow2];
+	double *xComplex = new double[doublePow2];
+	//set hComplex , xComplex with 0's
+	for(i = 0; i < doublePow2; i++) {
 		hComplex[i] = 0.0;			
-	}	
-
-	//set xComplex with 0's
-
-	double *xComplex = new double[2 * pow2];
- 	
-	for(i = 0; i < 2 * pow2; i++) {
 		xComplex[i] = 0.0;
-	}		
-	
-	//padding the complex number with 0 and the real number with original value for h
+	}	
+ 	//padding the complex number with 0 and the real number with original value for h
 	for(i = 0; i < sizeH; i++) {
 		hComplex[2*i] = h[i];
 	}
@@ -340,7 +335,7 @@ int main(int argc, char* argv[])
 	four1(hComplex, pow2, 1);
 	four1(xComplex, pow2, 1);
 
-	double *yComplex = new double[2 * pow2];		
+	double *yComplex = new double[doublePow2];		
 	for(i = 0; i < pow2 ; i++) {
 		yComplex[i*2] = xComplex[i] * hComplex[i] - xComplex[i+1] * hComplex[i+1];
 		yComplex[i*2+1] = xComplex[i+1] * hComplex[i] + xComplex[i] * hComplex[i+1];
